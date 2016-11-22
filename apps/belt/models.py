@@ -25,13 +25,6 @@ class QuoteManager(models.Manager):
             errors.append('Quoted by, cannot be less than 3 characters')
         return(errors)
 
-    def remove(self, request, quote_id):
-        user = User.objects.filter(id=request.POST['user']['user_id'])
-        quote = Quote.objects.get(id=quote_id)
-        quote.favorites.remove(user)
-        quote.save()
-
-
 class Quote(models.Model):
     poster = models.ForeignKey(User, related_name='posted_quote')
     author = models.CharField(max_length=100)
