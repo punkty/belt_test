@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-import bcrypt
+import bcrypt, re
 
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 class UserManager(models.Manager):
     def validate_reg(self, request):
@@ -13,15 +14,15 @@ class UserManager(models.Manager):
 
         pw_hash = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt())
 
-        user = self.create(name=request.POST['name'], username=request.POST['username'], password=pw_hash)
+        user = self.create(name=request.POST['name'], alias=request.POST['alias'], email=request.POST['email'], password=pw_hash, bday =request.POST['bday'])
 
         return (True, user)
 
     def validate_login(self, request):
         try:
-            user = User.objects.get(username=request.POST['username'])
+            user = User.objects.get(email=request.POST['email'])
             password = request.POST['password'].encode()
-            if bcrypt.checkpw(password, user.password.encode()):
+            if bcrypt.hashpw(password, user.password.encode()):
                 return (True, user)
 
         except ObjectDoesNotExist:
@@ -33,14 +34,11 @@ class UserManager(models.Manager):
         errors = []
 
         if not request.POST['name']:
-            errors.append('Name cannot be blank.')
-        if len(request.POST['name']) < 3:
-            errors.append('Name cannot be less than 3 characters')
-        if not request.POST['username']:
-            errors.append('Please enter a Username.')
-        if len(request.POST['username']) < 3:
-            errors.append('Username cannot be less than 3 characters')
-
+            errors.append('First name cannot be blank.')
+        if not request.POST['email']:
+            errors.append('Please enter an email.')
+        elif not EMAIL_REGEX.match(request.POST['email']):
+            errors.append('Invalid email.')
         if len(request.POST['password']) < 8:
             errors.append('Password must be at least 8 characters.')
         if request.POST['password'] != request.POST['confirm']:
@@ -50,8 +48,10 @@ class UserManager(models.Manager):
 
 class User(models.Model):
     name = models.CharField(max_length = 50)
-    username = models.CharField(max_length = 50)
+    alias = models.CharField(max_length = 50)
+    email = models.CharField(max_length = 50)
     password = models.CharField(max_length = 255)
+    bday = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <title>Quotes</title>
+</head>
+<body>
+    <a href="{% url 'quotes:index' %}"><button>Dashboard</button></a>
+    <a href="{% url 'login:logout' %}"><button>Logout</button></a>
+    <h1>Posts by: {{ user.name }}</h1>
+    <h3>Count:{{ all_faves.count }}</h3>
+    <!--for loop goes here -->
+    {% for faves in all_faves %}
+    <h4>{{ faves.author }} {{ faves.content }}</h4>
+    {% endfor %}
+    <h4>Other user's joining the trip:</h4>
+</body>
+</html>

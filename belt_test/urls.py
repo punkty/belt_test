@@ -18,5 +18,5 @@ from django.conf.urls import url,include
 
 urlpatterns = [
     url(r'^', include('apps.login.urls',namespace='login')),
-    url(r'^belt/', include('apps.belt.urls',namespace='changeme'))
+    url(r'^belt/', include('apps.belt.urls',namespace='quotes'))
 ]

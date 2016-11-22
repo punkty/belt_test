@@ -2,9 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Quotes</title>
+    {% load static %}
 </head>
 <body>
-    <h1>we in boys</h1>
+    <a href="{% url 'login:logout' %}"><button>Logout</button></a>
+    <h1>Welcome {{ request.session.user.name }}</h1>
+    
+
+    <h2>Quotable Quotes</h2>
+        {% for quote in all_quotes %}
+    <ul>
+        <li>{{ quote.author }}: {{ quote.content }}</li>
+        <li>posted by:<a href="{% url 'quotes:show_user' quote.poster.id %}">{{ quote.poster.name }}</a></li>
+        <li><button><a href="{% url 'quotes:add_fave' quote.id %}">Add to My List</a></button></li>
+    </ul>
+        {% endfor %}
+
+    <h2>Your Favorites</h2>
+        {% for quote in your_faves %}
+    <ul>
+        <li>{{ quote.author }}: {{ quote.content }}</li>
+        <li>posted by:<a href="{% url 'quotes:show_user' quote.poster.id %}">{{ quote.poster.name }}</a></li>
+        <li><button><a href="{% url 'quotes:remove' quote.id %}">Remove From My List</a></button></li>
+    </ul>
+        {% endfor %}
+    <h2>Contribute a Quote:</h2>
+    <form action="{% url 'quotes:create_quote' %}" method="POST">
+        {% csrf_token %}
+        <p>Quoted By: <input type="text" name="author"></p>
+        <p>Message: <textarea name="content"></textarea></p>
+        <p><input type="submit" value='Sumit'></p>
+    </form>
+     {% if messages %}
+         {% for message in messages %}
+             <h5>{{ message }}</h5>
+         {% endfor %}
+    {% endif %} 
 </body>
 </html>
